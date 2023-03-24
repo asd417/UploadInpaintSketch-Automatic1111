@@ -51,3 +51,14 @@ Mask Mode: Inpaint Masked
 Mask Mode: Inpaint not Masked
 
 ![00053-498094752](https://user-images.githubusercontent.com/33945246/227452909-d7cec86c-6de6-4c23-a4a8-6156ddd57103.png)
+
+
+Additional Features:
+* Mask Alpha Channel Multiplier:
+
+Controls Mask Transparency
+
+* Mask Image Alpha Multiplier
+
+Controls blending strength of mask on image
+
