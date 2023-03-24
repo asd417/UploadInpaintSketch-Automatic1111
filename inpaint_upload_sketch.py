@@ -16,7 +16,7 @@ class Script(scripts.Script):
         return "Upload Inpaint Sketch"
 
     def ui(self, is_img2img):
-        info = gr.HTML("<p style=\"margin-bottom:0.75em; color:white\">Must be in Inpaint Upload Mode!</p>")
+        info = gr.HTML("<p style=\"color:white\">Must be in Inpaint Upload Mode!</p>")
         
         with gr.Row():
             with gr.Column(min_width = 50, scale=1):
@@ -26,31 +26,34 @@ class Script(scripts.Script):
 
     def run(self, p, _, active, file_mask):
         if not active:
-            print("MASK P TYPE= " + str(type(p.image_mask)))
+            # print("MASK P TYPE= " + str(type(p.image_mask)))
             return process_images(p)
-        
+
         file_mask_image = Image.open(file_mask)
-        print("MASK FILE TYPE= " + str(type(file_mask_image)))
+        # image from p.image_mask does not have alpha channel
+        # file_mask_image = p.image_mask
         image = p.init_images[0]
         
         if 'A' in file_mask_image.getbands():
+            print("Input Mask Image has transparency")
             r,g,b,a = file_mask_image.split()
             mask = a
+
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp:
+                mask.save(temp.name)
+
+            if not (image.mode is 'RGBA'):
+                alpha = Image.new("L", image.size, 255)
+                image.putalpha(alpha)      
+
+            image = Image.alpha_composite(image,file_mask_image)
+            image = image.convert("RGB")
+        
         else:
-            file_mask_image = Image.fromarray()
+            # mask image is not transparent. Why would anyone do that idk
+            print("\nInput Mask image is not transparent\n")
+            image = file_mask_image
             mask = Image.new('RGB', (image.size[0], image.size[1]), color='white')
-
-        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp:
-            mask.save(temp.name)
-
-        if not (image.mode is 'RGBA'):
-            alpha = Image.new("L", image.size, 255)
-            image.putalpha(alpha)      
-
-        print("MODE IS "+ file_mask_image.mode)
-        print("MODE IS "+ image.mode)
-        image = Image.alpha_composite(image,file_mask_image)
-        image = image.convert("RGB")
 
         p.init_images[0] = image
         p.image_mask = mask
