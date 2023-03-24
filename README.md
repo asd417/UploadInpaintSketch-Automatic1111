@@ -54,7 +54,7 @@ Mask Mode: Inpaint not Masked
 
 
 Additional Features:
-* Mask Alpha Channel Multiplier \n Controls Mask Transparency
+* Mask Alpha Channel Multiplier: Controls Mask Transparency
 
-* Mask Image Alpha Multiplier \n Controls blending strength of mask on image
+* Mask Image Alpha Multiplier: Controls blending strength of mask on image
 
